@@ -46,10 +46,10 @@ class ConceptIRI {
           (content.identifier || []).forEach(id => {
             if (id.system === 'https://terminology.hl7.org/temporary/CodeSystem/RDF-prefix') {
               // console.log(`CodeSystem ${url} has prefix ${id.value})`);
-              if (id.value in this.prefixIndex === false) this.prefixIndex[id.value] = {};
+              if (!this.prefixIndex.hasOwnProperty(id.value)) this.prefixIndex[id.value] = {};
               this.prefixIndex[id.value][url] = 1;
 
-              if (url in this.uriIndex === false) this.uriIndex[url] = {};
+              if (!this.uriIndex.hasOwnProperty(url)) this.uriIndex[url] = {};
               this.uriIndex[url][id.value] = 1;
             }
           });
@@ -61,10 +61,10 @@ class ConceptIRI {
           (content.uniqueId || []).forEach(id => {
             uris.forEach(uri => {
               if (id.comment === 'rdf-prefix') {
-                if (id.value in this.prefixIndex === false) this.prefixIndex[id.value] = {};
+                if (!this.prefixIndex.hasOwnProperty(id.value)) this.prefixIndex[id.value] = {};
                 this.prefixIndex[id.value][uri] = 1;
 
-                if (uri in this.uriIndex === false) this.uriIndex[uri] = {};
+                if (!this.uriIndex.hasOwnProperty(uri)) this.uriIndex[uri] = {};
                 this.uriIndex[uri][id.value] = 1;
 
                 // console.log(`NamingSystem ${uri} has prefix ${id.value}`);
