@@ -1,14 +1,22 @@
+/*
+ * Concept IRI handling code.
+ */
+
 /**
  * A class for converting FHIR Codings into RDF.
  */
 class ConceptIRI {
+  constructor() {
+
+  }
+
   /**
    * A static method for converting a FHIR Coding to a Concept IRI.
    *
    * @param coding A FHIR Coding as an object
    * @return A Concept IRI as a string
    */
-  static fromCoding(coding) {
+  fromCoding(coding) {
 
   }
 
@@ -18,7 +26,7 @@ class ConceptIRI {
    * @param iri A concept IRI.
    * @return A FHIR Coding as an object.
    */
-  static toCoding(iri) {
+  toCoding(iri) {
 
   }
 }
