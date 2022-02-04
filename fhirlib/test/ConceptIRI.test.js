@@ -1,10 +1,24 @@
 let { ConceptIRI } = require('../ConceptIRI.js');
+const path = require("path");
+const fs = require("fs");
 
 let examples = {
   'https://purl.bioontology.org/ontology/SNOMEDCT/87512008': {
-    "system": "http://snomed.info/sct",
-    "code": "87512008",
+    system: "http://snomed.info/sct",
+    code: "87512008",
     // "display": "Mild major depression"
+  },
+  'https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/CA': {
+    system: "urn:iso:std:iso:3166",
+    code: "CA",
+  },
+  'http://dicom.nema.org/resources/ontology/DCM/110127': {
+    system: 'http://dicom.nema.org/resources/ontology/DCM',
+    code: '110127',
+  },
+  'http://purl.bioontology.org/ontology/RXNORM/1160593': {
+    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+    code: '1160593',
   },
 };
 
@@ -24,4 +38,18 @@ test('Convert some Concept IRIs to FHIR Codings', () => {
 
         expect(conceptIRI.toCoding(iri)).toEqual([coding]);
     }
+});
+
+// Let's test every system/value pair in the JSON file.
+test('Test every system/value pair in the FHIR JSON examples', () => {
+    let package_json_path = require.resolve('hl7.terminology/package.json');
+    if (!package_json_path) {
+      throw new Error("ConceptIRI requires 'hl7.terminology' to be installed.");
+    }
+    let hl7terminology_path = path.dirname(package_json_path);
+
+    // Load all CodeSystem and Naming files from the hl7terminology path and look for prefix information.
+    let files = fs.readdirSync(hl7terminology_path);
+
+    // TODO: use glob() to find all JSON files and stuff.
 });
