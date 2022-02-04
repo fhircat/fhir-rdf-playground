@@ -3,32 +3,37 @@ const path = require("path");
 const fs = require("fs");
 
 let examples = {
-  'https://purl.bioontology.org/ontology/SNOMEDCT/87512008': {
+  'https://purl.bioontology.org/ontology/SNOMEDCT/87512008': [{
     system: "http://snomed.info/sct",
     code: "87512008",
     // "display": "Mild major depression"
-  },
-  'https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/CA': {
+  }],
+  'https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/CA': [{
+    system: "urn:iso:std:iso:3166:-2", // This looks weird, but it is real: https://terminology.hl7.org/CodeSystem-v3-iso3166-2.html
+    code: "CA",
+  }, {
     system: "urn:iso:std:iso:3166",
     code: "CA",
-  },
-  'http://dicom.nema.org/resources/ontology/DCM/110127': {
+  }],
+  'http://dicom.nema.org/resources/ontology/DCM/110127': [{
     system: 'http://dicom.nema.org/resources/ontology/DCM',
     code: '110127',
-  },
-  'http://purl.bioontology.org/ontology/RXNORM/1160593': {
+  }],
+  'http://purl.bioontology.org/ontology/RXNORM/1160593': [{
     system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
     code: '1160593',
-  },
+  }],
 };
 
 let conceptIRI = new ConceptIRI();
 
 test('Convert some FHIR Codings to IRIs', () => {
     for (let iri in examples) {
-        let coding = examples[iri];
+        let codings = examples[iri];
 
-        expect(conceptIRI.fromCoding(coding)).toEqual([iri]);
+        codings.forEach(coding => {
+            expect(conceptIRI.fromCoding(coding)).toEqual([iri]);
+        });
     }
 });
 
@@ -36,7 +41,7 @@ test('Convert some Concept IRIs to FHIR Codings', () => {
     for (let iri in examples) {
         let coding = examples[iri];
 
-        expect(conceptIRI.toCoding(iri)).toEqual([coding]);
+        expect(conceptIRI.toCoding(iri).sort()).toEqual(coding.sort());
     }
 });
 

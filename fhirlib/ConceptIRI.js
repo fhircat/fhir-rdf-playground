@@ -55,7 +55,10 @@ class ConceptIRI {
           });
         } else if(filename.startsWith('NamingSystem-')) {
           // Find uri.
-          let uris = (content.uniqueId || []).filter(id => id.type === 'uri').map(id => id.value);
+          let uris = (content.uniqueId || [])
+              .filter(id => id.type === 'uri')        // Only URIs
+              .filter(id => id.preferred)             // Only preferred entries
+              .map(id => id.value);
 
           // Find uniqueId.
           (content.uniqueId || []).forEach(id => {
@@ -111,9 +114,10 @@ class ConceptIRI {
       return [];
     }
 
-    // console.log(`Split IRI into baseURI=${baseUri} and code=${code}`)
+    // console.log(`Split IRI into prefix=${prefix} and code=${code}`)
 
     if (prefix in this.prefixIndex) {
+      // console.log(`Prefix information: ${JSON.stringify(this.prefixIndex[prefix])}`)
       return Object.keys(this.prefixIndex[prefix]).map(uri => {
         return {
           system: uri,
