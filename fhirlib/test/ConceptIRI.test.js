@@ -144,18 +144,20 @@ function test_fhir_json(version, fhir_json_path) {
     // Step 4. For downstream analyses, we're just interested in unique system/code pairs.
     const codes_by_system = groupBy(system_code_pairs, r => r.system);
     const f_unique = fs.createWriteStream(path.resolve(__dirname, `fhir/examples/unique-codes-${version}.tsv`), 'utf-8');
-    f_unique.write('system\tcode\tpath_ends\tfilenames\n');
+    f_unique.write('system\tcode\tdisplay\tpath_ends\tfilenames\n');
     Object.keys(codes_by_system).forEach(system => {
         const codes_by_code = groupBy(codes_by_system[system], r => r.code);
         Object.keys(codes_by_code).forEach(code => {
-            // Summarize path_end
+            // Summarize values
             const results = codes_by_code[code];
+            const unique_displays = uniq(results.map(r => r.display));
             const unique_path_ends = uniq(results.map(r => r.path_end));
             const unique_filenames = uniq(results.map(r => r.filename));
 
             f_unique.write([
                 system,
                 code,
+                unique_displays.join('|'),
                 unique_path_ends.join('|'),
                 unique_filenames.join('|')
             ].join('\t') + '\n')
@@ -166,11 +168,12 @@ function test_fhir_json(version, fhir_json_path) {
     // Step 5. The most important thing we're interested in is whether all concept IRIs are "correct". For now,
     // we can determine this by trying to resolve them, although in the future we should probably query OLS or something.
     const f_resolved = fs.createWriteStream(path.resolve(__dirname, `fhir/examples/resolved-${version}.tsv`), 'utf-8');
-    f_resolved.write('system\tcode\tiri\tresolvable\tpath_ends\tfilenames\n');
+    f_resolved.write('system\tcode\tiri\tresolvable\tdisplay\tpath_ends\tfilenames\n');
     Object.keys(codes_by_system).forEach(system => {
         const codes_by_code = groupBy(codes_by_system[system], r => r.code);
         Object.keys(codes_by_code).forEach(code => {
             const results = codes_by_code[code];
+            const unique_displays = uniq(results.map(r => r.display));
             const unique_path_ends = uniq(results.map(r => r.path_end));
             const unique_filenames = uniq(results.map(r => r.filename));
 
@@ -196,6 +199,7 @@ function test_fhir_json(version, fhir_json_path) {
                 code,
                 iri,
                 resolvable,
+                unique_displays.join('|'),
                 unique_path_ends.join('|'),
                 unique_filenames.join('|')
             ].join('\t') + '\n')
