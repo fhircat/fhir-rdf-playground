@@ -1,5 +1,5 @@
 const { ConceptIRI } = require('../ConceptIRI.js');
-const lodash = require('lodash');
+const { has } = require('lodash');
 const path = require("path");
 const fs = require("fs");
 
@@ -67,19 +67,44 @@ function get_files_in_dir(dirname, filter=(filename) => true, recursive=true) {
     return output_files;
 }
 
-function get_system_code_pairs_from_file(filename, inner_object = undefined) {
+function get_system_code_pairs_from_file(filename, inner_object = undefined, obj_path='') {
     // The conventional thing to do would be to find all the Codings; however, to
     // ensure that we don't miss anything, I'm just going to search recursively for
     // every system/code pair anywhere in any of these files.
 
+    // console.log(`get_system_code_pairs_from_file(${filename}, ${inner_object}, ${obj_path})`);
+
     let obj = inner_object;
     if (!obj) {
-        obj = JSON.parse(fs.readFileSync(filename));
+        obj = JSON.parse(fs.readFileSync(filename, "utf-8"));
     }
 
-    // Does obj have a system/code pair?
-    if (Object.hasOwnProperty())
+    let results = [];
 
+    // Does obj have a system/code pair?
+    if (has(obj, 'system') && has(obj, 'code')) {
+        const result = /(\w+\.\w+)(?:\.\d+)$/.exec(obj_path);
+        const path_end = (result ? result[1] : '');
+
+        results.push({
+            filename,
+            object: obj,
+            path: obj_path,
+            path_end,
+            display: obj['display'] || '',
+            system: obj['system'],
+            code: obj['code'],
+        });
+    }
+
+    // Recurse into any properties of obj that are themselves objects.
+    for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === 'object' && value != null) {
+            results = results.concat(get_system_code_pairs_from_file(filename, value, `${obj_path}.${key}`))
+        }
+    }
+
+    return results;
 }
 
 /*
@@ -92,9 +117,28 @@ function test_fhir_json(fhir_json_path) {
     // ensure that we don't miss anything, I'm just going to search recursively for
     // every system/code pair anywhere in any of these files.
     let fhir_jsons = get_files_in_dir(fhir_json_path, (filename) => filename.toLowerCase().endsWith('.json'), true);
+    expect(fhir_jsons.length).toBeGreaterThan(0);
 
     // Step 2. Open each file and recurse through every object.
-    let system_code_pairs = fhir_jsons.flatMap(get_system_code_pairs_from_file);
+    let system_code_pairs = fhir_jsons.flatMap(filename => {
+        // console.log(`Searching for code pairs for {filename}.`);
+        return get_system_code_pairs_from_file(filename);
+    });
+
+    // Step 3. Write out a tab-delimited file containing all the relevant information.
+    let f = fs.createWriteStream(path.resolve(__dirname, 'fhir/examples/system-codes.tsv'), 'utf-8');
+    f.write('filename\tpath\tpath_end\tsystem\tcode\tdisplay\n');
+    system_code_pairs.forEach(result => {
+        f.write([
+            result.filename,
+            result.path,
+            result.path_end,
+            result.system,
+            result.code,
+            result.display
+        ].join('\t') + '\n')
+    })
+    f.close();
 }
 
 // Let's test every system/value pair in the FHIR JSON R4 files.
