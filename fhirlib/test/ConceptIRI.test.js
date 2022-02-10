@@ -1,5 +1,6 @@
 const { ConceptIRI } = require('../ConceptIRI.js');
 const { has, groupBy, uniq } = require('lodash');
+const retus = require('retus');
 const path = require("path");
 const fs = require("fs");
 
@@ -161,6 +162,46 @@ function test_fhir_json(version, fhir_json_path) {
         });
     });
     f_unique.close();
+
+    // Step 5. The most important thing we're interested in is whether all concept IRIs are "correct". For now,
+    // we can determine this by trying to resolve them, although in the future we should probably query OLS or something.
+    const f_resolved = fs.createWriteStream(path.resolve(__dirname, `fhir/examples/resolved-${version}.tsv`), 'utf-8');
+    f_resolved.write('system\tcode\tiri\tresolvable\tpath_ends\tfilenames\n');
+    Object.keys(codes_by_system).forEach(system => {
+        const codes_by_code = groupBy(codes_by_system[system], r => r.code);
+        Object.keys(codes_by_code).forEach(code => {
+            const results = codes_by_code[code];
+            const unique_path_ends = uniq(results.map(r => r.path_end));
+            const unique_filenames = uniq(results.map(r => r.filename));
+
+            const iris = conceptIRI.fromCoding({
+                system,
+                code,
+            });
+            const iri = iris[0] || '';
+            let resolvable = '';
+            if(iri && (iri.startsWith('http:') || iri.startsWith('https:'))) {
+                try {
+                    const response = retus.get(iri, {
+                        throwHttpErrors: false
+                    });
+                    resolvable = response['statusCode'] || 'error';
+                } catch(e) {
+                    resolvable = `error:${e}`
+                }
+            }
+
+            f_resolved.write([
+                system,
+                code,
+                iri,
+                resolvable,
+                unique_path_ends.join('|'),
+                unique_filenames.join('|')
+            ].join('\t') + '\n')
+        });
+    });
+    f_resolved.close();
 }
 
 // Let's test every system/value pair in the FHIR JSON R4 files.
