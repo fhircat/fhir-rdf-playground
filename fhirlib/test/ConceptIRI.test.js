@@ -25,6 +25,10 @@ const examples = {
     system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
     code: '1160593',
   }],
+  'https://id.nlm.nih.gov/mesh/D000305': [{
+    system: 'https://www.nlm.nih.gov/mesh',
+    code: 'D000305',
+  }],
 };
 
 const conceptIRI = new ConceptIRI();
