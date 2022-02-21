@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 
 const examples = {
-  'https://purl.bioontology.org/ontology/SNOMEDCT/87512008': [{
+  'http://snomed.info/id/87512008': [{
     system: "http://snomed.info/sct",
     code: "87512008",
     // "display": "Mild major depression"
