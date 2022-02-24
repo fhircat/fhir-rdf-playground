@@ -223,7 +223,6 @@ function test_fhir_json(version, fhir_json_path) {
     f_resolved.close();
 }
 
-/*
 // Let's test every system/value pair in the FHIR JSON R4 files.
 test('Test every system/value pair in the FHIR JSON R4 examples', () => {
     test_fhir_json('r4', path.resolve(__dirname, 'fhir/examples/fhir-r4'));
@@ -233,4 +232,3 @@ test('Test every system/value pair in the FHIR JSON R4 examples', () => {
 test('Test every system/value pair in the FHIR JSON R5 examples', () => {
     test_fhir_json('r5', path.resolve(__dirname, 'fhir/examples/fhir-r5'));
 });
-*/
