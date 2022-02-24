@@ -29,6 +29,12 @@ const examples = {
     system: 'https://www.nlm.nih.gov/mesh',
     code: 'D000305',
   }],
+  // If Coding.system == 'urn:ietf:rfc:3986', then the Coding.code
+  // should be considered a concept URI.
+  'urn:oid:1.2.840.10008.5.1.4.1.1.2': [{
+    system: 'urn:ietf:rfc:3986',
+    code: 'urn:oid:1.2.840.10008.5.1.4.1.1.2',
+  }],
 };
 
 const conceptIRI = new ConceptIRI();

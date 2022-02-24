@@ -89,6 +89,11 @@ class ConceptIRI {
    */
   fromCoding(coding) {
     let system = coding.system || '';
+
+    // A Coding.system of 'urn:ietf:rfc:3986' denotes that the code is already
+    // a URI.
+    if (system === 'urn:ietf:rfc:3986') return coding.code;
+
     if (system in this.uriIndex) return Object.keys(this.uriIndex[system]).map(key => key + coding.code);
     return [];
   }
@@ -110,8 +115,12 @@ class ConceptIRI {
       prefix = iri.substr(0, iri.lastIndexOf('/') + 1);
       code = iri.substr(iri.lastIndexOf('/') + 1);
     } else {
-      console.log(`Could not determine coding for IRI '{iri}': could not separate code and baseURI.`);
-      return [];
+      console.log(`Could not determine coding for IRI '${iri}': could not separate code and baseURI.`);
+      // Since we know it's a IRI, we can set that as the system.
+      return [{
+	system: 'urn:ietf:rfc:3986',
+	iri,
+      }];
     }
 
     // console.log(`Split IRI into prefix=${prefix} and code=${code}`)
@@ -126,7 +135,11 @@ class ConceptIRI {
       });
     }
 
-    return [];
+    // It's still an IRI! Return it as such.
+    return [{
+      system: 'urn:ietf:rfc:3986',
+      iri,
+    }];
   }
 }
 
