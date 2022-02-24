@@ -92,9 +92,9 @@ class ConceptIRI {
 
     // A Coding.system of 'urn:ietf:rfc:3986' denotes that the code is already
     // a URI.
-    if (system === 'urn:ietf:rfc:3986') return coding.code;
+    if (system === 'urn:ietf:rfc:3986') return [coding.code];
 
-    if (system in this.uriIndex) return Object.keys(this.uriIndex[system]).map(key => key + coding.code);
+    if (system in this.uriIndex) return Object.keys(this.uriIndex[system]).map(key => key + encodeURIComponent(coding.code));
     return [];
   }
 
@@ -119,7 +119,7 @@ class ConceptIRI {
       // Since we know it's a IRI, we can set that as the system.
       return [{
 	system: 'urn:ietf:rfc:3986',
-	iri,
+	code: iri,
       }];
     }
 
@@ -130,7 +130,7 @@ class ConceptIRI {
       return Object.keys(this.prefixIndex[prefix]).map(uri => {
         return {
           system: uri,
-          code,
+          code: decodeURIComponent(code),
         };
       });
     }
@@ -138,7 +138,7 @@ class ConceptIRI {
     // It's still an IRI! Return it as such.
     return [{
       system: 'urn:ietf:rfc:3986',
-      iri,
+      code: iri,
     }];
   }
 }

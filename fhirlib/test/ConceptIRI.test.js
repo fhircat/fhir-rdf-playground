@@ -29,6 +29,11 @@ const examples = {
     system: 'https://www.nlm.nih.gov/mesh',
     code: 'D000305',
   }],
+  // Test support for URI-encoding complex codes.
+  'http://snomed.info/id/128045006%3A%7B363698007%3D56459004%7D': [{
+    system: 'http://snomed.info/sct',
+    code: '128045006:{363698007=56459004}',
+  }],
   // If Coding.system == 'urn:ietf:rfc:3986', then the Coding.code
   // should be considered a concept URI.
   'urn:oid:1.2.840.10008.5.1.4.1.1.2': [{
@@ -218,6 +223,7 @@ function test_fhir_json(version, fhir_json_path) {
     f_resolved.close();
 }
 
+/*
 // Let's test every system/value pair in the FHIR JSON R4 files.
 test('Test every system/value pair in the FHIR JSON R4 examples', () => {
     test_fhir_json('r4', path.resolve(__dirname, 'fhir/examples/fhir-r4'));
@@ -227,4 +233,4 @@ test('Test every system/value pair in the FHIR JSON R4 examples', () => {
 test('Test every system/value pair in the FHIR JSON R5 examples', () => {
     test_fhir_json('r5', path.resolve(__dirname, 'fhir/examples/fhir-r5'));
 });
-
+*/
