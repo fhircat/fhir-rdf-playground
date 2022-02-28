@@ -29,13 +29,13 @@ const examples = {
     system: 'https://www.nlm.nih.gov/mesh',
     code: 'D000305',
   }],
-  // Test support for URI-encoding complex codes.
+  // Test support for IRI-encoding complex codes.
   'http://snomed.info/id/128045006%3A%7B363698007%3D56459004%7D': [{
     system: 'http://snomed.info/sct',
     code: '128045006:{363698007=56459004}',
   }],
   // If Coding.system == 'urn:ietf:rfc:3986', then the Coding.code
-  // should be considered a concept URI.
+  // should be considered a concept IRI.
   'urn:oid:1.2.840.10008.5.1.4.1.1.2': [{
     system: 'urn:ietf:rfc:3986',
     code: 'urn:oid:1.2.840.10008.5.1.4.1.1.2',
