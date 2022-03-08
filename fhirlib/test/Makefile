@@ -21,10 +21,10 @@ fhir/examples/fhir-r5:
 fhir/examples: fhir/examples/downloaded fhir/examples/unzipped
 
 fhir/examples/downloaded: fhir/examples/fhir-r4 fhir/examples/fhir-r5
-	wget --continue http://www.hl7.org/fhir/examples-json.zip -O fhir/examples/fhir-r4/examples-json.zip
-	wget --continue http://www.hl7.org/fhir/examples-ttl.zip -O fhir/examples/fhir-r4/examples-ttl.zip
-	wget --continue http://build.fhir.org/examples-json.zip -O fhir/examples/fhir-r5/examples-json.zip
-	wget --continue http://build.fhir.org/examples-ttl.zip -O fhir/examples/fhir-r5/examples-ttl.zip
+	curl http://www.hl7.org/fhir/examples-json.zip -o fhir/examples/fhir-r4/examples-json.zip
+	curl http://www.hl7.org/fhir/examples-ttl.zip -o fhir/examples/fhir-r4/examples-ttl.zip
+	curl http://build.fhir.org/examples-json.zip -o fhir/examples/fhir-r5/examples-json.zip
+	curl http://build.fhir.org/examples-ttl.zip -o fhir/examples/fhir-r5/examples-ttl.zip
 
 fhir/examples/unzipped: fhir/examples/downloaded
 	rm -rf fhir/examples/fhir-r4/examples-json
