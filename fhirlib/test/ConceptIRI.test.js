@@ -229,12 +229,17 @@ function test_fhir_json(version, fhir_json_path) {
     f_resolved.close();
 }
 
-// Let's test every system/value pair in the FHIR JSON R4 files.
-test('Test every system/value pair in the FHIR JSON R4 examples', () => {
+if(process.env['RUN_SLOW_TESTS'] && process.env.RUN_SLOW_TESTS) {
+  // Let's test every system/value pair in the FHIR JSON R4 files.
+  test('Test every system/value pair in the FHIR JSON R4 examples', () => {
     test_fhir_json('r4', path.resolve(__dirname, 'fhir/examples/fhir-r4'));
-});
+  });
 
-// Let's test every system/value pair in the FHIR JSON R5 files.
-test('Test every system/value pair in the FHIR JSON R5 examples', () => {
+  // Let's test every system/value pair in the FHIR JSON R5 files.
+  test('Test every system/value pair in the FHIR JSON R5 examples', () => {
     test_fhir_json('r5', path.resolve(__dirname, 'fhir/examples/fhir-r5'));
-});
+  });
+} else {
+  test.todo('Test every system/value pair in the FHIR JSON R4 examples (set RUN_SLOW_TESTS=1 to run, then check outputs manually)')
+  test.todo('Test every system/value pair in the FHIR JSON R5 examples (set RUN_SLOW_TESTS=1 to run, then check outputs manually)')
+}
