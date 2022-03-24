@@ -40,6 +40,12 @@ const examples = {
     system: 'urn:ietf:rfc:3986',
     code: 'urn:oid:1.2.840.10008.5.1.4.1.1.2',
   }],
+  // Testing Unicode codes using SNOMED CT and the Unicode smiling
+  // face (U+263A, ☺). Note that this is not actually a valid SNOMED CT code.
+  'http://snomed.info/id/%E2%98%BA': [{
+    system: 'http://snomed.info/sct',
+    code: '☺',
+  }],
 };
 
 const conceptIRI = new ConceptIRI();
