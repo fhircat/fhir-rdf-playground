@@ -46,6 +46,14 @@ const examples = {
     system: 'http://snomed.info/sct',
     code: '☺',
   }],
+  // Test Unicode codes with surrogate characters and combinations,
+  // in this case the combination of a waving hand (U+1F44B) and
+  // medium-dark skin tone (U+1F3FE). Note that this is not an actual
+  // SNOMED CT code.
+  'http://snomed.info/id/%E2%98%BA': [{
+    system: 'http://snomed.info/sct',
+    code: '👋🏾',
+  }],
 };
 
 const conceptIRI = new ConceptIRI();
