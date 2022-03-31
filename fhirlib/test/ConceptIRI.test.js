@@ -50,7 +50,7 @@ const examples = {
   // in this case the combination of a waving hand (U+1F44B) and
   // medium-dark skin tone (U+1F3FE). Note that this is not an actual
   // SNOMED CT code.
-  'http://snomed.info/id/%E2%98%BA': [{
+  'http://snomed.info/id/%F0%9F%91%8B%F0%9F%8F%BE': [{
     system: 'http://snomed.info/sct',
     code: '👋🏾',
   }],
