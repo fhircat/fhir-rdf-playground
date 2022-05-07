@@ -1032,12 +1032,13 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
     if(playground.options.input.processingMode !== '') {
       options.processingMode = playground.options.input.processingMode;
     }
+    console.log('performAction', Date.now() - globalThis.s);
     var promise;
     if(playground.activeTab === 'tab-compacted') {
       promise = jsonld.compact(input, param, options);
     }
     else if(playground.activeTab === 'tab-expanded') {
-      promise = jsonld.expand(input, options)
+      promise = jsonld.expand(input, options).then(r => { console.log('expanded', Date.now() - globalThis.s); return r; })
     }
     else if(playground.activeTab === 'tab-flattened') {
       promise = jsonld.flatten(input, param, options);
@@ -1047,10 +1048,12 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
     }
     else if(playground.activeTab === 'tab-nquads') {
       options.format = 'application/n-quads';
+      console.log(`jsonld.toRDF`, Date.now() - globalThis.s);
       promise = jsonld.toRDF(input, options)
         .then(dataset => {
           // Use N3.Parser to extract quads.
           // Currently input is n-quads so it won't emit any prefixes.
+          console.log(`N3.parse`, Date.now() - globalThis.s);
           const quads = [];
           const parser = new N3.Parser({
             baseIRI: document.baseURI,
@@ -1075,6 +1078,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
           // db has the passed quads. restDb will receive quads not part of the FHIR Resource.
           const db = new N3.Store();
           db.addQuads(quads);
+          console.log(`N3.parsed ${db.size} quads`, Date.now() - globalThis.s);
           const restDb = new N3.Store();
 
           // The FhirTurtleSerializer passes FHIR Resource quads to the NestedWriter.
@@ -1098,6 +1102,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
           writer.end((error, result) => {
             if (error)
               throw new Error(error);
+            console.log(`rendered`, Date.now() - globalThis.s);
             pretty = result;
           });
           return pretty;
@@ -1300,9 +1305,11 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
     }
 
     return promise.then(function(result) {
+      console.log('performAction.then', Date.now() - globalThis.s);
       var outputTab = playground.activeTab.substr('tab-'.length);
       result = playground.humanize(result);
       playground.outputs[outputTab].setValue(result);
+      console.log('performAction set value', Date.now() - globalThis.s);
     });
   };
 
@@ -1504,6 +1511,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
         function(){
           playground.permalink();
           playground.process = playground._process;
+          console.log('DONE (success)', Date.now() - globalThis.s);
         },
         function(err){
           // FIXME: add better error handling output
@@ -1517,6 +1525,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
           playground.process = debounced ?
             playground.process :
             playground.debounce(playground._process, 500);
+          console.log('DONE (failure)', Date.now() - globalThis.s);
           return err;
         }
       );
@@ -1757,10 +1766,13 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
    */
   playground.populateWithJSON = function(data) {
     var hasData = false;
+    globalThis.s = Date.now();
     $.each(playground.editors, function(key, editor){
       if(key in data && data[key] !== null){
         hasData = true;
+        console.log('populate1764', Date.now() - globalThis.s);
         editor.setValue(playground.humanize(data[key]));
+        console.log('populate1766', Date.now() - globalThis.s);
       }else{
         if(key !== 'privatekey-rsa' && key !== 'privatekey-koblitz' &&
                 key !== 'publickey-koblitz') {
@@ -1772,11 +1784,15 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
     if(playground.copyContext){
       playground.toggleCopyContext(true);
     }
+    console.log('populate1778', Date.now() - globalThis.s);
     if(hasData) {
       // perform processing on the data provided in the input boxes
+      console.log('populate1781', Date.now() - globalThis.s);
       const ret = playground.process();
+      console.log('populate1783', Date.now() - globalThis.s);
       return ret;
     }
+    console.log('populate1786', Date.now() - globalThis.s);
   };
 
 
