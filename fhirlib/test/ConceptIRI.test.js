@@ -45,7 +45,7 @@ const examples = {
     code: 'D000305',
   }],
   // Test support for IRI-encoding complex codes.
-  'http://snomed.info/id/128045006%3A%7B363698007%3D56459004%7D': [{
+  'http://snomed.info/id/128045006:{363698007=56459004}': [{
     system: 'http://snomed.info/sct',
     code: '128045006:{363698007=56459004}',
   }],
@@ -57,7 +57,7 @@ const examples = {
   }],
   // Testing Unicode codes using SNOMED CT and the Unicode smiling
   // face (U+263A, ☺). Note that this is not actually a valid SNOMED CT code.
-  'http://snomed.info/id/%E2%98%BA': [{
+  'http://snomed.info/id/☺': [{
     system: 'http://snomed.info/sct',
     code: '☺',
   }],
