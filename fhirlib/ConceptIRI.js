@@ -10,6 +10,19 @@ const path = require('path');
  */
 class ConceptIRI {
   /**
+   * Encode a code such that it can be concatenated into an IRI.
+   */
+  static codeToIRI(code) {
+    const utf8String = new Buffer(code, 'utf-8').toString();
+
+    // This definition of iunreserved is from RFC 3987, section 2.2
+    // https://datatracker.ietf.org/doc/html/rfc3987#section-2.2
+    return utf8String.replace(/[^A-Za-z0-9\-\._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF\u10000-\u1FFFD\u20000-\u2FFFD\u30000-\u3FFFD\u40000-\u4FFFD\u50000-\u5FFFD\u60000-\u6FFFD\u70000-\u7FFFD\u80000-\u8FFFD\u90000-\u9FFFD\uA0000-\uAFFFD\uB0000-\uBFFFD\uC0000-\uCFFFD\uD0000-\uDFFFD\uE1000-\uEFFFD]/gu, function(ch) {
+      return encodeURIComponent(ch);
+    });
+  }
+
+  /**
    * Ideally, we'll eventually have some kind of prefix index within hl7.terminology.
    * Until we have that, we have to index that package ourselves. We do that when this
    * class is constructed so that further calls to this method should be fast.
@@ -94,7 +107,7 @@ class ConceptIRI {
     // a URI.
     if (system === 'urn:ietf:rfc:3986') return [coding.code];
 
-    if (system in this.uriIndex) return Object.keys(this.uriIndex[system]).map(key => key + encodeURIComponent(coding.code));
+    if (system in this.uriIndex) return Object.keys(this.uriIndex[system]).map(key => key + ConceptIRI.codeToIRI(coding.code));
     return [];
   }
 
