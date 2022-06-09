@@ -14,7 +14,7 @@ const examples = {
     system: "urn:iso:std:iso:3166:-2", // This looks weird, but it is real: https://terminology.hl7.org/CodeSystem-v3-iso3166-2.html
     code: "CA",
   }, {
-    system: "urn:iso:std:iso:3166",
+    system: "http://terminology.hl7.org/CodeSystem/iso3166-2",
     code: "CA",
   }],
   'http://dicom.nema.org/resources/ontology/DCM/110127': [{
