@@ -26,6 +26,7 @@
     "hierarchy-closure": "^1.2.1",
     "hl7.terminology": "^3.1.0",
     "jsonld": "^5.2.0",
+    "lodash": "^4.17.21",
     "n3": "^1.11.2"
   }
 }
