@@ -1,3 +1,18 @@
+/*
+ * Concept IRI tests.
+ *
+ * This includes:
+ * - Unit tests that are run every time. These convert a handful of
+ *   FHIR system/code pairs back and forth from concept IRIs, including
+ *   an example with surrogate pairs.
+ * - Slower tests that are only run if RUN_SLOW_TESTS is set
+ *   to true (or 1). These use the FHIR examples in `test/fhir/examples`
+ *   (downloaded by `test/Makefile` by running `make` in that directory)
+ *   to test the ConceptIRI code by attempting to convert every system/code
+ *   pair from the FHIR examples into concept IRIs and attempts to resolve
+ *   them.
+ */
+
 const { ConceptIRI } = require('../ConceptIRI.js');
 const { has, groupBy, uniq } = require('lodash');
 const retus = require('retus');
