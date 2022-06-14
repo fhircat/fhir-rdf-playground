@@ -45,7 +45,7 @@ const examples = {
     code: 'D000305',
   }],
   // Test support for IRI-encoding complex codes.
-  'http://snomed.info/id/128045006:{363698007=56459004}': [{
+  'http://snomed.info/id/128045006%3A%7B363698007%3D56459004%7D': [{
     system: 'http://snomed.info/sct',
     code: '128045006:{363698007=56459004}',
   }],
@@ -70,6 +70,18 @@ const examples = {
     code: '👋🏾',
   }],
 };
+
+test('Test whether codeToIRI() works correctly', () => {
+  // Characters within 0-9A-Za-z should definitely not be escaped.
+  expect(ConceptIRI.codeToIRI('0123456789ADTGZadtgz-.~_')).toEqual('0123456789ADTGZadtgz-.~_');
+  // Unicode characters within the allowed ranges should not be escaped.
+  expect(ConceptIRI.codeToIRI('ȅ')).toEqual('ȅ');
+  expect(ConceptIRI.codeToIRI('ȅ')).toEqual(String.fromCodePoint(0x0205));
+  // Unicode characters outside our allowed ranges should be escaped.
+  // expect(ConceptIRI.codeToIRI(String.fromCodePoint(0x1FB69))).toEqual(String.fromCodePoint(0x1FB69));
+  // However, our ranges allow characters like 0x1FFFE, so these should not be escaped.
+  // expect(ConceptIRI.codeToIRI("hello" + String.fromCodePoint(0x1FFFE))).toEqual("hello" + String.fromCodePoint(0x1FFFE));
+});
 
 const conceptIRI = new ConceptIRI();
 

@@ -13,14 +13,49 @@ class ConceptIRI {
    * Encode a code such that it can be concatenated into an IRI.
    */
   static codeToIRI(code) {
-    const utf8String = new Buffer(code, 'utf-8').toString();
-
     // This definition of iunreserved is from RFC 3987, section 2.2
     // https://datatracker.ietf.org/doc/html/rfc3987#section-2.2
-    return utf8String.replace(/[^A-Za-z0-9\-\._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF\u10000-\u1FFFD\u20000-\u2FFFD\u30000-\u3FFFD\u40000-\u4FFFD\u50000-\u5FFFD\u60000-\u6FFFD\u70000-\u7FFFD\u80000-\u8FFFD\u90000-\u9FFFD\uA0000-\uAFFFD\uB0000-\uBFFFD\uC0000-\uCFFFD\uD0000-\uDFFFD\uE1000-\uEFFFD]/gu, function(ch) {
-      // ch is a UTF-16 character, not a UTF-8 character.
-      // So encodeURIComponent() is probably the easiest way to do this.
-      return encodeURIComponent(ch);
+    return code.replace(/[^A-Za-z0-9\-\._~]/g, function(ch) {
+      // ch is a permitted Unicode character if it is in the following ranges:
+      //  \u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF\u10000-\u1FFFD\u20000-\u2FFFD\u30000-\u3FFFD\u40000-\u4FFFD\u50000-\u5FFFD\u60000-\u6FFFD\u70000-\u7FFFD\u80000-\u8FFFD\u90000-\u9FFFD\uA0000-\uAFFFD\uB0000-\uBFFFD\uC0000-\uCFFFD\uD0000-\uDFFFD\uE1000-\uEFFFD]
+      const cp = ch.codePointAt(0);
+
+      if (
+          (cp >= 0x00A0 && cp <= 0xD7FF) ||
+          (cp >= 0xF900 && cp <= 0xFDCF) ||
+          (cp >= 0xFDF0 && cp <= 0xFFEF) ||
+          (cp >= 0x10000 && cp <= 0x1FFFD) ||
+          (cp >= 0x20000 && cp <= 0x2FFFD) ||
+          (cp >= 0x30000 && cp <= 0x3FFFD) ||
+          (cp >= 0x40000 && cp <= 0x4FFFD) ||
+          (cp >= 0x50000 && cp <= 0x5FFFD) ||
+          (cp >= 0x60000 && cp <= 0x6FFFD) ||
+          (cp >= 0x70000 && cp <= 0x7FFFD) ||
+          (cp >= 0x80000 && cp <= 0x8FFFD) ||
+          (cp >= 0x90000 && cp <= 0x9FFFD) ||
+          (cp >= 0xA0000 && cp <= 0xAFFFD) ||
+          (cp >= 0xB0000 && cp <= 0xBFFFD) ||
+          (cp >= 0xC0000 && cp <= 0xCFFFD) ||
+          (cp >= 0xD0000 && cp <= 0xDFFFD) ||
+          (cp >= 0xE1000 && cp <= 0xEFFFD)
+      ) {
+        // This is fine! Pass it through unescaped.
+        return ch;
+      } else {
+        const buff = Buffer.from(ch, 'utf-8');
+        const list = [...buff].map(utf8ch => {
+          // console.log(`UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`);
+          if (utf8ch <= 0x0F) return `%0${utf8ch.toString(16).toUpperCase()}`;
+          else if (utf8ch <= 0xFF) return `%${utf8ch.toString(16).toUpperCase()}`;
+          else throw new Error(
+            `Unexpected UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`
+          );
+        });
+
+        // console.log(`ch = ${ch} (${cp.toString(16)}): Buffer(${buff}) [${buff.lengnth}] => ${list} [${list.length}] => ${list.join("")}`);
+
+        return list.join("");
+      }
     });
   }
 
