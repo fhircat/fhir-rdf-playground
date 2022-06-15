@@ -42,7 +42,7 @@ class ConceptIRI {
       } else {
         const buff = Buffer.from(ch, 'utf-8');
         const list = [...buff].map(utf8ch => {
-          console.log(`UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`);
+          // console.log(`UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`);
           if (utf8ch <= 0x0F) return `%0${utf8ch.toString(16).toUpperCase()}`;
           else if (utf8ch <= 0xFF) return `%${utf8ch.toString(16).toUpperCase()}`;
           else throw new Error(
@@ -51,7 +51,7 @@ class ConceptIRI {
         });
         const ch0 = ch.codePointAt(0) || Number(0)
         const ch1 = ch.codePointAt(1) || Number(0)
-        console.log(`Converted ${ch} (U+${ch0.toString(16)} U+${ch1.toString(16)}) to ${list} (${buff.length} -> ${list.length})`);
+        // console.log(`Converted ${ch} (U+${ch0.toString(16)} U+${ch1.toString(16)}) to ${list} (${buff.length} -> ${list.length})`);
 
         // console.log(`ch = ${ch} (${cp.toString(16)}): Buffer(${buff}) [${buff.lengnth}] => ${list} [${list.length}] => ${list.join("")}`);
 
