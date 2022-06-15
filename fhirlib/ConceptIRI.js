@@ -15,9 +15,7 @@ class ConceptIRI {
   static codeToIRI(code) {
     // This definition of iunreserved is from RFC 3987, section 2.2
     // https://datatracker.ietf.org/doc/html/rfc3987#section-2.2
-    return code.replace(/[^A-Za-z0-9\-\._~]/g, function(ch) {
-      // ch is a permitted Unicode character if it is in the following ranges:
-      //  \u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF\u10000-\u1FFFD\u20000-\u2FFFD\u30000-\u3FFFD\u40000-\u4FFFD\u50000-\u5FFFD\u60000-\u6FFFD\u70000-\u7FFFD\u80000-\u8FFFD\u90000-\u9FFFD\uA0000-\uAFFFD\uB0000-\uBFFFD\uC0000-\uCFFFD\uD0000-\uDFFFD\uE1000-\uEFFFD]
+    return code.replace(/[^A-Za-z0-9\-\._~]/gu, function(ch) {
       const cp = ch.codePointAt(0);
 
       if (
@@ -44,13 +42,16 @@ class ConceptIRI {
       } else {
         const buff = Buffer.from(ch, 'utf-8');
         const list = [...buff].map(utf8ch => {
-          // console.log(`UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`);
+          console.log(`UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`);
           if (utf8ch <= 0x0F) return `%0${utf8ch.toString(16).toUpperCase()}`;
           else if (utf8ch <= 0xFF) return `%${utf8ch.toString(16).toUpperCase()}`;
           else throw new Error(
             `Unexpected UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`
           );
         });
+        const ch0 = ch.codePointAt(0) || Number(0)
+        const ch1 = ch.codePointAt(1) || Number(0)
+        console.log(`Converted ${ch} (U+${ch0.toString(16)} U+${ch1.toString(16)}) to ${list} (${buff.length} -> ${list.length})`);
 
         // console.log(`ch = ${ch} (${cp.toString(16)}): Buffer(${buff}) [${buff.lengnth}] => ${list} [${list.length}] => ${list.join("")}`);
 
