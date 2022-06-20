@@ -13,41 +13,30 @@ class ConceptIRI {
    * Encode a code such that it can be concatenated into an IRI.
    */
   static codeToIRI(code) {
+    let invalid_characters = [];
+
     // This definition of iunreserved is from RFC 3987, section 2.2
     // https://datatracker.ietf.org/doc/html/rfc3987#section-2.2
-    return code.replace(/[^A-Za-z0-9\-\._~]/gu, function(ch) {
+    const escaped_code = code.replace(/[^A-Za-z0-9\-\._~]/gu, function(ch) {
       const cp = ch.codePointAt(0);
 
-      if (
-          (cp >= 0x00A0 && cp <= 0xD7FF) ||
-          (cp >= 0xF900 && cp <= 0xFDCF) ||
-          (cp >= 0xFDF0 && cp <= 0xFFEF) ||
-          (cp >= 0x10000 && cp <= 0x1FFFD) ||
-          (cp >= 0x20000 && cp <= 0x2FFFD) ||
-          (cp >= 0x30000 && cp <= 0x3FFFD) ||
-          (cp >= 0x40000 && cp <= 0x4FFFD) ||
-          (cp >= 0x50000 && cp <= 0x5FFFD) ||
-          (cp >= 0x60000 && cp <= 0x6FFFD) ||
-          (cp >= 0x70000 && cp <= 0x7FFFD) ||
-          (cp >= 0x80000 && cp <= 0x8FFFD) ||
-          (cp >= 0x90000 && cp <= 0x9FFFD) ||
-          (cp >= 0xA0000 && cp <= 0xAFFFD) ||
-          (cp >= 0xB0000 && cp <= 0xBFFFD) ||
-          (cp >= 0xC0000 && cp <= 0xCFFFD) ||
-          (cp >= 0xD0000 && cp <= 0xDFFFD) ||
-          (cp >= 0xE1000 && cp <= 0xEFFFD)
-      ) {
-        // This is fine! Pass it through unescaped.
-        return ch;
-      } else {
+      if (cp < 0x00A0) {
+        // Characters below U+00A0 that are not one of the allowed
+        // characters (ALPHA/DIGIT/"-"/"."/"_"/"~") should be escaped.
+        //
+        // In practice, this applies to characters in the Basic Latin
+        // block (U+0000 to U+007F), since characters between U+0080
+        // and U+00A0 are various special characters, such as padding
+        // characters, no break here, reverse index, cancel character
+        // and so on. But for completeness, we'll escape them anyway.
         const buff = Buffer.from(ch, 'utf-8');
         const list = [...buff].map(utf8ch => {
           // console.log(`UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`);
           if (utf8ch <= 0x0F) return `%0${utf8ch.toString(16).toUpperCase()}`;
           else if (utf8ch <= 0xFF) return `%${utf8ch.toString(16).toUpperCase()}`;
           else throw new Error(
-            `Unexpected UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`
-          );
+                `Unexpected UTF8 character found in code '${code}': U+${cp} contains UTF-8 character ${utf8ch} (${utf8ch.toString(16)})`
+            );
         });
         const ch0 = ch.codePointAt(0) || Number(0)
         const ch1 = ch.codePointAt(1) || Number(0)
@@ -56,8 +45,44 @@ class ConceptIRI {
         // console.log(`ch = ${ch} (${cp.toString(16)}): Buffer(${buff}) [${buff.lengnth}] => ${list} [${list.length}] => ${list.join("")}`);
 
         return list.join("");
+      } else if (
+        (cp >= 0x00A0 && cp <= 0xD7FF) ||
+        (cp >= 0xF900 && cp <= 0xFDCF) ||
+        (cp >= 0xFDF0 && cp <= 0xFFEF) ||
+        (cp >= 0x10000 && cp <= 0x1FFFD) ||
+        (cp >= 0x20000 && cp <= 0x2FFFD) ||
+        (cp >= 0x30000 && cp <= 0x3FFFD) ||
+        (cp >= 0x40000 && cp <= 0x4FFFD) ||
+        (cp >= 0x50000 && cp <= 0x5FFFD) ||
+        (cp >= 0x60000 && cp <= 0x6FFFD) ||
+        (cp >= 0x70000 && cp <= 0x7FFFD) ||
+        (cp >= 0x80000 && cp <= 0x8FFFD) ||
+        (cp >= 0x90000 && cp <= 0x9FFFD) ||
+        (cp >= 0xA0000 && cp <= 0xAFFFD) ||
+        (cp >= 0xB0000 && cp <= 0xBFFFD) ||
+        (cp >= 0xC0000 && cp <= 0xCFFFD) ||
+        (cp >= 0xD0000 && cp <= 0xDFFFD) ||
+        (cp >= 0xE1000 && cp <= 0xEFFFD)
+      ) {
+        // Unicode characters above U+00A0 that are included in the ucschar range
+        // (as defined in https://datatracker.ietf.org/doc/html/rfc3987#section-2.2)
+        // can be passed through unescaped.
+        return ch;
+      } else {
+        // Unicode characters above U+00A0 that are NOT included in the ucschar range
+        // (as defined in https://datatracker.ietf.org/doc/html/rfc3987#section-2.2)
+        // are forbidden. We throw an exception.
+        invalid_characters.push(cp);
       }
     });
+
+    if (invalid_characters.length > 0) {
+      throw new Error(`Invalid characters found in code "${code}": ` +
+        invalid_characters.map(cp => "U+" + cp.toString(16).toUpperCase().padStart(4, '0')).join(", ")
+      );
+    }
+
+    return escaped_code;
   }
 
   /**
