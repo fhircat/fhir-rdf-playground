@@ -77,10 +77,11 @@ test('Test whether codeToIRI() works correctly', () => {
   // Unicode characters within the allowed ranges should not be escaped.
   expect(ConceptIRI.codeToIRI('ȅ')).toEqual('ȅ');
   expect(ConceptIRI.codeToIRI('ȅ')).toEqual(String.fromCodePoint(0x0205));
-  // Unicode characters outside our allowed ranges should be escaped.
   expect(ConceptIRI.codeToIRI(String.fromCodePoint(0x1FB69))).toEqual(String.fromCodePoint(0x1FB69));
-  // However, our ranges allow characters like 0x1FFFE, so these should not be escaped.
-  expect(ConceptIRI.codeToIRI("hello" + String.fromCodePoint(0x1FFFE))).toEqual("hello%F0%9F%BF%BE");
+  // Unicode characters outside our allowed ranges should throw an exception.
+  expect(() => {
+    ConceptIRI.codeToIRI("hello" + String.fromCodePoint(0x1FFFE));
+  }).toThrowError(/Invalid characters.*U\+1FFFE/); // Expect an error message that includes the invalid character.
 });
 
 const conceptIRI = new ConceptIRI();
