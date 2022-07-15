@@ -50,7 +50,7 @@ const examples = {
     code: '128045006:{363698007=56459004}',
   }],
   // If Coding.system == 'urn:ietf:rfc:3986', then the Coding.code
-  // should be considered a concept IRI.
+  // should be considered a concept URI.
   'urn:oid:1.2.840.10008.5.1.4.1.1.2': [{
     system: 'urn:ietf:rfc:3986',
     code: 'urn:oid:1.2.840.10008.5.1.4.1.1.2',
@@ -82,6 +82,11 @@ test('Test whether codeToIRI() works correctly', () => {
   expect(() => {
     ConceptIRI.codeToIRI("hello" + String.fromCodePoint(0x1FFFE));
   }).toThrowError(/Invalid characters.*U\+1FFFE/); // Expect an error message that includes the invalid character.
+
+  // FHIR codes are defined a bit oddly: "Technically, a code is restricted to a string which has at least one character and no leading or trailing whitespace, and where there is no whitespace other than single spaces in the contents".
+  // So let's make sure those work in a sensible manner.
+  expect(ConceptIRI.codeToIRI('valid FHIR code')).toEqual('valid%20FHIR%20code');
+  expect(ConceptIRI.codeToIRI('  invalid FHIR code ')).toEqual('%20%20invalid%20FHIR%20code%20');
 });
 
 const conceptIRI = new ConceptIRI();
