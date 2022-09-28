@@ -51,7 +51,7 @@
               <a href="playground/"><span class="icon-beer"></span> RDVCH Playground</a>
             </li>
             <li>
-              <a href="https://fhircat.org/jsonld/playground/#startTab=tab-final-jsonld"><span class="icon-beer"></span> HFIRCat Playground</a>
+              <a href="https://fhircat.org/jsonld/playground/#startTab=tab-final-jsonld"><span class="icon-beer"></span> FHIRCat Playground</a>
             </li>
             <li>
               <a href="https://json-ld.org/playground/"><span class="icon-beer"></span> JSON-LD Playground</a>
@@ -114,27 +114,16 @@
         <div style="clear: both;"></div>
       </div>
       <p>
-        This playground is for experimenting with converting FHIR JSON to FHIR RDF, both for the R4 (current) version and the R5 (proposed) version.   It is based on the awesome <a href="https://json-ld.org/playground/">JSON-LD Playground</a>.  
+        This playground is for experimenting with converting FHIR JSON to FHIR RDF, both for the R4 (current) version and the R5 (proposed) version.   It is based on the awesome <a href="https://json-ld.org/playground/">JSON-LD Playground</a>.
       </p>
+      <div class="alert alert-info">
+        <strong>DO NOT use this playground for processing Protected Health Information (PHI).</strong>  Although it may be safe to do so, because this playground runs in the browser, as of this writing this playground has not been vetted for use with PHI.
+      </div>
         <ol>
           <li>Paste your FHIR JSON into the top text box below, or click one of the example tabs to load a predefined example.</li>
           <li>Click the "Generate JSON-LD" button, which converts your FHIR JSON into JSON-LD and displays it in the second text box below.</li>
           <li>Click the "Turtle" tab, to have Turtle displayed in the third text box below, or choose a different tab for a different format.</li>
         </ol>
-      <div class="alert alert-info">
-        <strong>NOTE</strong>:
-        The playground uses <a href="https://github.com/digitalbazaar/jsonld.js">jsonld.js</a>
-        which <a href="https://github.com/digitalbazaar/jsonld.js#conformance">conforms</a>
-        to JSON-LD 1.1
-        <a href="https://www.w3.org/TR/2020/PR-json-ld11-20200507/">syntax</a>
-        (<a href="https://w3c.github.io/json-ld-syntax/errata/">errata</a>),
-        <a href="https://www.w3.org/TR/2020/PR-json-ld11-api-20200507/">API</a>
-        (<a href="https://w3c.github.io/json-ld-api/errata/">errata</a>), and 
-        <a href="https://www.w3.org/TR/2020/PR-json-ld11-framing-20200507/">framing</a>
-        (<a href="https://w3c.github.io/json-ld-framing/errata/">errata</a>).
-        Also see the classic <a href="./1.0/">JSON-LD 1.0 playground</a> and
-        the <a href="http://rdf.greggkellogg.net/distiller">RDF Distiller</a>.
-      </div>
     </div>
 
     <div class="loading hero">
@@ -438,6 +427,12 @@ yT2IMAWbY76Bmi8TeQJAfdLJGwiDNIhTVYHxvDz79ANzgRAd1kPKPddJZ/w7Gfhm
         <div id="output-container">
           <ul id="output-tabs" class="nav nav-tabs">
             <li class="active">
+              <a id="tab-nquads" href="#pane-nquads" data-toggle="tab" name="tab-nquads">
+                <i class="rdf-icon-rdf"></i>
+                <span>Turtle</span>
+              </a>
+            </li>
+            <li>
               <a id="tab-expanded" href="#pane-expanded" data-toggle="tab" name="tab-expanded">
                 <i class="icon-resize-full"></i>
                 <span>Expanded</span>
@@ -462,12 +457,6 @@ yT2IMAWbY76Bmi8TeQJAfdLJGwiDNIhTVYHxvDz79ANzgRAd1kPKPddJZ/w7Gfhm
               </a>
             </li>
             <li>
-              <a id="tab-nquads" href="#pane-nquads" data-toggle="tab" name="tab-nquads">
-                <i class="rdf-icon-rdf"></i>
-                <span>Turtle</span>
-              </a>
-            </li>
-            <li>
               <a id="tab-normalized" href="#pane-normalized" data-toggle="tab" name="tab-normalized">
                 <i class="icon-archive"></i>
                 <span>Normalized</span>
@@ -488,7 +477,10 @@ yT2IMAWbY76Bmi8TeQJAfdLJGwiDNIhTVYHxvDz79ANzgRAd1kPKPddJZ/w7Gfhm
           </ul>
 
           <div class="tab-content">
-            <div id="pane-expanded" class="tab-pane active">
+            <div id="pane-nquads" class="tab-pane active">
+              <textarea id="nquads" class="codemirror-output"></textarea>
+            </div>
+            <div id="pane-expanded" class="tab-pane">
               <textarea id="expanded" class="codemirror-output"></textarea>
             </div>
             <div id="pane-compacted" class="tab-pane">
@@ -499,9 +491,6 @@ yT2IMAWbY76Bmi8TeQJAfdLJGwiDNIhTVYHxvDz79ANzgRAd1kPKPddJZ/w7Gfhm
             </div>
             <div id="pane-framed" class="tab-pane">
               <textarea id="framed" class="codemirror-output"></textarea>
-            </div>
-            <div id="pane-nquads" class="tab-pane">
-              <textarea id="nquads" class="codemirror-output"></textarea>
             </div>
             <div id="pane-normalized" class="tab-pane">
               <textarea id="normalized" class="codemirror-output"></textarea>

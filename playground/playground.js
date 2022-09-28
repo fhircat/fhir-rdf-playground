@@ -45,7 +45,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
   playground.lastParsed = docs();
 
   // set the active tab to the expanded view
-  playground.activeTab = 'tab-expanded';
+  playground.activeTab = 'tab-nquads';
 
   // map of original to modifed contexts
   playground.contextMap = {
@@ -114,14 +114,49 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
     return await regenShExJ();
   }
 
-  function constructAxes () {
-    return {
-      r: $("#btn-Resource").is(":checked"),
-      d: $("#btn-Datatype").is(":checked"),
-      v: $("#btn-Valuetype").is(":checked"),
-      c: $("#btn-RdfCollections").is(":checked"),
-      h: $("#btn-HoistScalars").is(":checked"),
+  const AxisButtons = {
+    r: {ord: 0, id: "Resource"},
+    d: {ord: 1, id: "Datatype"},
+    v: {ord: 2, id: "Valuetype"},
+    c: {ord: 3, id: "RdfCollections"},
+    h: {ord: 4, id: "HoistScalars"},
+  };
+
+  function prepareAxisButtons () {
+    for (let k in AxisButtons) {
+      const btn = $("#btn-" + AxisButtons[k].id);
+      btn.on("change", function () {
+        editRdvchStatusText(AxisButtons[k].ord, btn);
+        regenShExJ();
+      });
     }
+  }
+
+  function constructAxes () {
+    return Object.keys(AxisButtons).reduce((acc, k) => {
+      acc[k] = $("#btn-" + AxisButtons[k].id).is(":checked");
+      return acc;
+    }, {});
+  }
+
+  function setAxes (axesStr = "rdvCh") {
+    for (let k in AxisButtons) {
+      if (axesStr.indexOf(k) !== -1) {
+        const btn = $("#btn-" + AxisButtons[k].id);
+        btn.prop('checked', false);
+        editRdvchStatusText(AxisButtons[k].ord, btn);
+      } else if (axesStr.indexOf(k.toUpperCase()) !== -1) {
+        const btn = $("#btn-" + AxisButtons[k].id);
+        btn.prop('checked', true);
+        editRdvchStatusText(AxisButtons[k].ord, btn);
+      }
+    }
+  }
+
+  function editRdvchStatusText (pos, elt) {
+    let text = $("#rdvchStatus").text().split('');
+    text[pos] = $(elt).is(":checked") ? text[pos].toUpperCase() : text[pos].toLowerCase();
+    $("#rdvchStatus").text(text.join(''));
   }
 
   async function regenShExJ () {
@@ -187,12 +222,12 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
    *
    * @param name a query parameter name.
    *
-   * @return the value of the parameter or null if it does not exist
+   * @return the value of the parameter or undefined if it does not exist
    */
   function getParameterByName(name) {
     var match = new RegExp('[#?&]' + name + '=([^&]*)')
       .exec(window.location.hash || window.location.search);
-    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    return (match && decodeURIComponent(match[1].replace(/\+/g, ' '))) || undefined;
   }
 
 
@@ -240,7 +275,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       var rval = null;
 
       // check 'json-ld' parameter
-      if(param !== null) {
+      if(param !== undefined) {
         if(param.length === 0 || param[0] === '{' || param[0] === '[') {
           // param looks like JSON, try to parse it
           try {
@@ -389,17 +424,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       $(this).tab('show');
     }).on("show", playground.tabSelected);
 
-    $("#btn-Resource, #btn-Datatype, #btn-Valuetype, #btn-RdfCollections, #btn-HoistScalars").on("change", regenShExJ);
-    $("#btn-Resource"      ).on("change", function () { editRdvchStatusText(0, this); });
-    $("#btn-Datatype"      ).on("change", function () { editRdvchStatusText(1, this); });
-    $("#btn-Valuetype"     ).on("change", function () { editRdvchStatusText(2, this); });
-    $("#btn-RdfCollections").on("change", function () { editRdvchStatusText(3, this); });
-    $("#btn-HoistScalars"  ).on("change", function () { editRdvchStatusText(4, this); });
-    function editRdvchStatusText (pos, elt) {
-      let text = $("#rdvchStatus").text().split('');
-      text[pos] = $(elt).is(":checked") ? text[pos].toUpperCase() : text[pos].toLowerCase();
-      $("#rdvchStatus").text(text.join(''));
-    }
+    prepareAxisButtons();
 
     // show keybaord shortcuts
     $('.popover-info').popover({
@@ -1494,6 +1519,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
    * @return a promise to process
    */
   playground.process = playground._process = function(){
+    playground.outputs[playground.activeTab.substr("tab-".length)].setValue("");
     $('#markup-errors').hide().empty();
     $('#param-errors').hide().empty();
     $('#validation-errors').hide().empty();
@@ -2008,6 +2034,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       getParameterByName('manifestURL') || 'playground/manifest.json',
       window.location
     );
+    setAxes(getParameterByName('axes'));
 
     $('#use-context-map').change(function() {
       playground.process();
