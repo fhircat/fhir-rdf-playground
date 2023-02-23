@@ -536,7 +536,8 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
     async function uploadDefinitionsZip () {
       await unzipDefinitions(new zip.BlobReader(fileInput.files[0]), 'file upload');
     }
-
+  //James C
+  // This code toggles the sample resource buttons between r4 and r5
   $('#rVersion').click(
     function()
     {
