@@ -139,7 +139,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
     }, {});
   }
 
-  function setAxes (axesStr = "rdvCh") {
+  function setAxes (axesStr = "") {
     for (let k in AxisButtons) {
       if (axesStr.indexOf(k) !== -1) {
         const btn = $("#btn-" + AxisButtons[k].id);
@@ -517,6 +517,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       const dt = evt.dataTransfer;
       const url = dt.getData('URL');
       if (url) {
+        console.log(url);
         unzipDefinitions(new zip.HttpReader(url), url);
       } else if (dt.files.length > 0) {
         unzipDefinitions(new zip.BlobReader(dt.files[0]), 'file upload ' + dt.files[0].name);
@@ -536,7 +537,36 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       await unzipDefinitions(new zip.BlobReader(fileInput.files[0]), 'file upload');
     }
 
+  $('#rVersion').click(
+    function()
+    {
+       zip.configure({ workerScripts: { inflate: ['playground/lib/z-worker.js'] } });
+
+       if(rversion == 4)
+       { 
+           const url = "https://build.fhir.org/definitions.json.zip";
+           unzipDefinitions(new zip.HttpReader(url), url);
+           rversion = 5;
+           $('.r4').hide();
+           $('.r5').show();
+           $('#rVersion').html("Click here to use R4");
+       } 
+       else
+       { 
+           const url = "https://fhir-ru.github.io/definitions.json.zip";
+           unzipDefinitions(new zip.HttpReader(url), url);
+           rversion = 4;
+           $('.r5').hide();
+           $('.r4').show();
+           $('#rVersion').html("Click here to use R5");
+       } 
+    }    
+  );     
+
     async function unzipDefinitions (reader, source) {
+
+
+
       $('#processing-errors').hide().empty();
       fileInputButton.disabled = true;
       try {
@@ -1930,31 +1960,35 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       if (!Array.isArray(entries))
         entries = [entries];
       entries.forEach(entry => {
-        const {id, title, icon, url} = entry;
+        const {id, title, icon, url, active, version} = entry;
         // url may be relative to the manifestUrl
         const abs = new URL(url, manifestUrl);
+        
 
         // construct example button
-        $('.btn-group').append(
-          $('<button/>', {id: `btn-${id}`, 'class': 'btn button'}).append(
-            $('<i/>', { 'class': `icon ${icon}` }),
-            $('<span/>').append(
-              title,
-              $('<a/>', { href: abs }).append('*')
-            )
-          ).click(async function (evt) {
-
-            curTask = 'fetching %{abs.href}';
-            const exampleResp = await fetch(abs);
-            if (!exampleResp.ok)
-              throw Error(`got ${exampleResp.statusText}`);
-            const exampleText = await exampleResp.text();
-
-            curTask = 'parsing example %{abs.href}';
-            playground.examples[id] = JSON.parse(exampleText);
-            playground.populateWithExample(id);
-          })
-        );
+        if(active == true)
+        {
+           $('.btn-group').append(
+             $('<button/>', {id: `btn-${id}`, 'class': `btn button ${version}`}).append(
+               $('<i/>', { 'class': `icon ${icon}` }),
+               $('<span/>').append(
+                 title,
+                 $('<a/>', { href: abs }).append('*')
+               )
+             ).click(async function (evt) {
+           
+               curTask = 'fetching %{abs.href}';
+               const exampleResp = await fetch(abs);
+               if (!exampleResp.ok)
+                 throw Error(`got ${exampleResp.statusText}`);
+               const exampleText = await exampleResp.text();
+           
+               curTask = 'parsing example %{abs.href}';
+               playground.examples[id] = JSON.parse(exampleText);
+               playground.populateWithExample(id);
+             })
+           );
+        }
       });
     } catch (e) {
       console.error(e);
@@ -2054,6 +2088,12 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       html: true
     });
   });
+
+
+         
+         
+
+
   $("#btn-copy").click(function() {
     var outputTab = playground.activeTab.substr('tab-'.length);
     var value = playground.outputs[outputTab].getValue();
