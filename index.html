@@ -15,8 +15,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 
+
+
     <!-- Style Sheets -->
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap/bootstrap.css">
+
+    <!-- Remember to include jQuery :) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
 
     <!-- CodeMirror -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/g/bootstrap@2.3.1(css/bootstrap-responsive.min.css),codemirror@3.22.0(codemirror.css+addon/lint/lint.css+addon/hint/show-hint.css+theme/neat.css)">
@@ -28,14 +33,24 @@
 
     <link rel="shortcut icon" href="favicon.ico" />
     <style>
+
+      .r5 {display:none}
+
       /* label, .container::before, .container::after { display: contents; } */
       .hide { display: none; }
       input.rdf+label{ font-weight: normal; color: #444; background-color: #fff; background-image: none; padding: 0; }
       input.rdf:checked+label{ font-weight: bold; color: black; }
     </style>
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
   </head>
 
   <body id="page-playground" onload="playground.init();">
+   <!-- Link to open the modal -->
+
+
+
+
     <div class="navbar navbar-static-top">
       <div class="navbar-inner">
         <div class="row-fluid">
@@ -47,15 +62,6 @@
           <a class="brand" href="http://json-ld.org/"><img src="images/json-ld-data-24.png" alt="JSON-LD logo"> JSON-LD</a>
           <div class="nav-collapse">
           <ul class="nav">
-            <li class="active">
-              <a href="playground/"><span class="icon-beer"></span> RDVCH Playground</a>
-            </li>
-            <li>
-              <a href="https://fhircat.org/jsonld/playground/#startTab=tab-final-jsonld"><span class="icon-beer"></span> FHIRCat Playground</a>
-            </li>
-            <li>
-              <a href="https://json-ld.org/playground/"><span class="icon-beer"></span> JSON-LD Playground</a>
-            </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <span class="icon-folder-open"></span> Docs <b class="caret"></b>
@@ -96,21 +102,16 @@
             </ul>
           </div>
           <!--/.nav-collapse -->
+
         </div>
       </div>
     </div>
 
     <div class="container">
       <div>
-      <h1 style="float:left;">FHIR RDF Playground - <span id="rdvchStatus">RDVch</span> <button id="file-input-button" style="font-size: 80%; min-height: 1em;">R4.0</button><input type="file" id="file-input" accept="application/zip" hidden></h1>
-        <p style="float:left; padding-left: 1em;">
-          <input type="checkbox" class="btn-check rdf hide" id="btn-Resource" autocomplete="off" checked><label class="btn btn-primary" for="btn-Resource"><b>R</b>esource.</label>property<input type="checkbox" class="btn-check rdf hide" id="btn-Valuetype" autocomplete="off" checked><label class="btn btn-primary" for="btn-Valuetype">.<b>V</b>aluetype</label><br/>
-          <input type="checkbox" class="btn-check rdf hide" id="btn-Datatype" autocomplete="off" checked><label class="btn btn-primary" for="btn-Datatype"><b>D</b>atatype.</label>property...
-        </p>
-        <p style="float:left; padding-left: 1em;">
-          <input type="checkbox" class="btn-check rdf" id="btn-RdfCollections" autocomplete="off"><label class="btn btn-primary" for="btn-RdfCollections">rdf:<b>C</b>ollections</label><br/>
-          <input type="checkbox" class="btn-check rdf" id="btn-HoistScalars" autocomplete="off"><label class="btn btn-primary" for="btn-HoistScalars"><b>H</b>oist scalars</label>
-        </p>
+      <h1 style="float:left;">FHIR RDF Playground </h1>
+
+
         <div style="clear: both;"></div>
       </div>
       <p>
@@ -133,6 +134,9 @@
       <div class="container">
         <div class="btn-group" data-toggle="buttons-radio">
           <button class="btn disabled btn-primary">Examples:<a>*</a></button>
+ 
+
+
           <!-- dynamically populated from manifest:
           <button id="btn-person" class="btn button">
             <i class="icon icon-user"></i>
@@ -142,17 +146,6 @@
         </div>
 
         <div class="pull-right">
-          <a class="btn hide" id="permalink">
-            <i class="icon icon-link"></i>
-            <span>Permalink</span>
-          </a>
-          <a class="btn" id="gist">
-            <i class="icon icon-github"></i>
-            <span>Gist</span>
-          </a>
-          <button class="btn popover-info" title="Keyboard shortcuts">
-            <i class="icon icon-keyboard"></i> Shortcuts
-          </button>
           <div class="popover-info-content hide">
             <table class="table table-striped">
               <thead>
@@ -175,6 +168,43 @@
           </div>
         </div>
 
+
+<button type="button" class="btn btn-secondary" id="rVersion">
+  Click here to use R5
+</button>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModalLong">
+  Advanced
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Advanced Options</h5>
+        </button>
+      </div>
+      <div class="modal-body">
+          <button id="file-input-button" style="font-size: 80%; min-height: 1em;">Upload Definition File</button><input type="file" id="file-input" accept="application/zip" hidden>
+          <br />
+          <input type="checkbox" class="btn-check rdf hide" id="btn-Resource" autocomplete="off" checked><label class="btn btn-primary" for="btn-Resource"><b>R</b>esource.</label>property<input type="checkbox" class="btn-check rdf hide" id="btn-Valuetype" autocomplete="off" checked><label class="btn btn-primary" for="btn-Valuetype">.<b>V</b>aluetype</label>
+          <br />
+          <input type="checkbox" class="btn-check rdf hide" id="btn-Datatype" autocomplete="off" checked><label class="btn btn-primary" for="btn-Datatype"><b>D</b>atatype.</label>property...
+          <br />
+          <input type="checkbox" class="btn-check rdf" id="btn-RdfCollections" autocomplete="off"><label class="btn btn-primary" for="btn-RdfCollections">rdf:<b>C</b>ollections</label>
+          <br />
+          <input type="checkbox" class="btn-check rdf" id="btn-HoistScalars" autocomplete="off"><label class="btn btn-primary" for="btn-HoistScalars"><b>H</b>oist scalars</label>
+         <br />
+         <a id="showJsonld" style="cursor:pointer" >Show JSON-LD Editor</a>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
         <div class="container" id="markup-container">
           <div class="row">
             <div id="markup-div" class="span12">
@@ -183,19 +213,6 @@
                   <a id="tab-input" href="#pane-input" data-toggle="tab" name="tab-input">
                     <i class="icon-pencil"></i>
                     <span><strong>JSON-FHIR Input</strong></span> </a>
-                </li>
-                <li class="pull-right">
-                  <div class="editor-options">
-                    <div class="input-prepend editor-option" title="Use remote document" data-editor="markup">
-                      <button class="btn" type="button" data-toggle="button">
-                        <span class="icon-stack">
-                          <i class="icon-cloud icon-stack-base icon-muted"></i>
-                          <i class="icon-file"></i>
-                        </span>
-                      </button>
-                      <input class="span2" type="text" placeholder="Document URL"/>
-                    </div>
-                  </div>
                 </li>
               </ul>
 
@@ -413,14 +430,13 @@ yT2IMAWbY76Bmi8TeQJAfdLJGwiDNIhTVYHxvDz79ANzgRAd1kPKPddJZ/w7Gfhm
             </tbody>
           </table>
         </div>
-
-        <button>
+        <button style="display:none" id="generate">
           <a id="tab-final-jsonld" href="#pane-final-jsonld" data-toggle="tab" name="tab-final-jsonld">
             <i class="icon-pencil"></i>
             <span>Generate JSON-LD</span>
           </a>
         </button>
-        <div id="pane-final-jsonld" class="tab-pane">
+        <div id="pane-final-jsonld" class="tab-pane" style="display:none">
           <textarea id="final-jsonld" class="codemirror-output"></textarea>
         </div>
 
@@ -566,6 +582,12 @@ yT2IMAWbY76Bmi8TeQJAfdLJGwiDNIhTVYHxvDz79ANzgRAd1kPKPddJZ/w7Gfhm
     </script -->
 
     <script type="text/javascript">
+
+      var rversion = 4;
+      $('#showJsonld').click(
+      function(){
+         $('#pane-final-jsonld, #generate').show();
+      });
       $('#context-div').hide();
       $('#frame-div').hide();
       $('#privatekey-rsa-div').hide();
@@ -577,7 +599,11 @@ yT2IMAWbY76Bmi8TeQJAfdLJGwiDNIhTVYHxvDz79ANzgRAd1kPKPddJZ/w7Gfhm
           $(this).removeClass('active');
         });
       });
+      $('#toggle-event').change(function() {
+         $('#console-event').html('Toggle: ' + $(this).prop('checked'))
+         alert('');
+      })
+      
     </script>
-
   </body>
 </html>
