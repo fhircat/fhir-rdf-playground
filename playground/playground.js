@@ -75,6 +75,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       datatypes: null,
       valuesets: null
     },
+    //jamesc break
     profileUrls: {
       resources: "playground/R5-Resources-no-ws.json",
       datatypes: "playground/R5-Datatypes-no-ws.json",
@@ -139,7 +140,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
     }, {});
   }
 
-  function setAxes (axesStr = "rdvCh") {
+  function setAxes (axesStr = "") {
     for (let k in AxisButtons) {
       if (axesStr.indexOf(k) !== -1) {
         const btn = $("#btn-" + AxisButtons[k].id);
@@ -517,6 +518,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       const dt = evt.dataTransfer;
       const url = dt.getData('URL');
       if (url) {
+        console.log(url);
         unzipDefinitions(new zip.HttpReader(url), url);
       } else if (dt.files.length > 0) {
         unzipDefinitions(new zip.BlobReader(dt.files[0]), 'file upload ' + dt.files[0].name);
@@ -536,7 +538,38 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       await unzipDefinitions(new zip.BlobReader(fileInput.files[0]), 'file upload');
     }
 
+  //James C
+  // This code toggles the sample resource buttons between r4 and r5 and also changes definition file version.
+  $('#rVersion').click(
+    function()
+    {
+       zip.configure({ workerScripts: { inflate: ['playground/lib/z-worker.js'] } });
+
+       if(rversion == 4)
+       { 
+           const url = "http://hl7.org/fhir/5.0.0-snapshot1/definitions.json.zip";
+           unzipDefinitions(new zip.HttpReader(url), url);
+           rversion = 5;
+           $('.r4').hide();
+           $('.r5').show();
+           //$('#rVersion').html("Click here to use R4");
+       } 
+       else
+       { 
+           const url = "http://hl7.org/fhir/R4B/definitions.json.zip";
+           unzipDefinitions(new zip.HttpReader(url), url);
+           rversion = 4;
+           $('.r5').hide();
+           $('.r4').show();
+           //$('#rVersion').html("Click here to use R5");
+       } 
+    }    
+  );     
+
     async function unzipDefinitions (reader, source) {
+
+
+
       $('#processing-errors').hide().empty();
       fileInputButton.disabled = true;
       try {
@@ -548,6 +581,7 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
         const valuesets = await expectJson(/value/i);
 
         const version = await expectEntry(/version/i);
+
         const m = version.match(/version=([^\r\n]+)/);
         fileInputButton.innerText = m ? m[1] : '??';
         fileInputButton.title = version + `\n\nuploaded ${new Date().toISOString()} from\n${source}`;
@@ -1930,31 +1964,35 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       if (!Array.isArray(entries))
         entries = [entries];
       entries.forEach(entry => {
-        const {id, title, icon, url} = entry;
+        const {id, title, icon, url, active, version} = entry;
         // url may be relative to the manifestUrl
         const abs = new URL(url, manifestUrl);
+        
 
         // construct example button
-        $('.btn-group').append(
-          $('<button/>', {id: `btn-${id}`, 'class': 'btn button'}).append(
-            $('<i/>', { 'class': `icon ${icon}` }),
-            $('<span/>').append(
-              title,
-              $('<a/>', { href: abs }).append('*')
-            )
-          ).click(async function (evt) {
-
-            curTask = 'fetching %{abs.href}';
-            const exampleResp = await fetch(abs);
-            if (!exampleResp.ok)
-              throw Error(`got ${exampleResp.statusText}`);
-            const exampleText = await exampleResp.text();
-
-            curTask = 'parsing example %{abs.href}';
-            playground.examples[id] = JSON.parse(exampleText);
-            playground.populateWithExample(id);
-          })
-        );
+        if(active == true)
+        {
+           $('.btn-group').append(
+             $('<button/>', {id: `btn-${id}`, 'class': `btn button ${version}`}).append(
+               $('<i/>', { 'class': `icon ${icon}` }),
+               $('<span/>').append(
+                 title,
+                 $('<a/>', { href: abs }).append('*')
+               )
+             ).click(async function (evt) {
+           
+               curTask = 'fetching %{abs.href}';
+               const exampleResp = await fetch(abs);
+               if (!exampleResp.ok)
+                 throw Error(`got ${exampleResp.statusText}`);
+               const exampleText = await exampleResp.text();
+           
+               curTask = 'parsing example %{abs.href}';
+               playground.examples[id] = JSON.parse(exampleText);
+               playground.populateWithExample(id);
+             })
+           );
+        }
       });
     } catch (e) {
       console.error(e);
@@ -2054,6 +2092,12 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
       html: true
     });
   });
+
+
+         
+         
+
+
   $("#btn-copy").click(function() {
     var outputTab = playground.activeTab.substr('tab-'.length);
     var value = playground.outputs[outputTab].getValue();
