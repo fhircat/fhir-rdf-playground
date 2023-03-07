@@ -540,31 +540,27 @@ const GEN_JSONLD_CONTEXT_CONFIG = {
 
   //James C
   // This code toggles the sample resource buttons between r4 and r5 and also changes definition file version.
-  $('#rVersion').click(
+  $('.r').click(
     function()
     {
        zip.configure({ workerScripts: { inflate: ['playground/lib/z-worker.js'] } });
 
-       if(rversion == 4)
-       { 
+       if(this.id == "r5")
+       {   
            const url = "http://hl7.org/fhir/5.0.0-snapshot1/definitions.json.zip";
            unzipDefinitions(new zip.HttpReader(url), url);
-           rversion = 5;
            $('.r4').hide();
            $('.r5').show();
-           //$('#rVersion').html("Click here to use R4");
-       } 
+       }
        else
-       { 
+       {   
            const url = "http://hl7.org/fhir/R4B/definitions.json.zip";
            unzipDefinitions(new zip.HttpReader(url), url);
-           rversion = 4;
            $('.r5').hide();
            $('.r4').show();
-           //$('#rVersion').html("Click here to use R5");
-       } 
-    }    
-  );     
+       }
+    }
+  );
 
     async function unzipDefinitions (reader, source) {
 
