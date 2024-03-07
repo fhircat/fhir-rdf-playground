@@ -22,7 +22,7 @@
     "@shexjs/validator": "^1.0.0-alpha.23",
     "commander": "^9.4.0",
     "hierarchy-closure": "^1.2.1",
-    "hl7.terminology": "^3.1.0",
+    "hl7.terminology": "^5.4.0",
     "jsonld": "^8.0.0",
     "n3": "^1.16.2"
   },

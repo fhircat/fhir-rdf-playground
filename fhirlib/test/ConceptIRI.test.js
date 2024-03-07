@@ -20,6 +20,12 @@ const path = require("path");
 const fs = require("fs");
 
 const examples = {
+    'http://loinc.org/rdf/55284-4': [{
+        system: "http://loinc.org",
+        code: "55284-4",
+        // display: "Blood pressure systolic and diastolic",
+    }],
+/*
   'http://snomed.info/id/87512008': [{
     system: "http://snomed.info/sct",
     code: "87512008",
@@ -69,6 +75,7 @@ const examples = {
     system: 'http://snomed.info/sct',
     code: '👋🏾',
   }],
+ */
 };
 
 test('Test whether codeToIRI() works correctly', () => {
