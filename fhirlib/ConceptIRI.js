@@ -120,8 +120,8 @@ class ConceptIRI {
           let url = content.url;
 
           (content.identifier || []).forEach(id => {
-            if (id.system === 'https://terminology.hl7.org/temporary/CodeSystem/IRIstem') {
-              // console.log(`CodeSystem ${url} has prefix ${id.value})`);
+            if (id.system === 'urn:ietf:rfc:3987') {
+              console.log(`CodeSystem ${url} has prefix ${id.value}`);
               if (!this.prefixIndex.hasOwnProperty(id.value)) this.prefixIndex[id.value] = {};
               this.prefixIndex[id.value][url] = 1;
 
@@ -139,14 +139,14 @@ class ConceptIRI {
           // Find uniqueId.
           (content.uniqueId || []).forEach(id => {
             uris.forEach(uri => {
-              if (id.comment === 'IRIstem') {
+              if ('comment' in id && id.comment.match(/'iri-stem'/)) {
                 if (!this.prefixIndex.hasOwnProperty(id.value)) this.prefixIndex[id.value] = {};
                 this.prefixIndex[id.value][uri] = 1;
 
                 if (!this.uriIndex.hasOwnProperty(uri)) this.uriIndex[uri] = {};
                 this.uriIndex[uri][id.value] = 1;
 
-                // console.log(`NamingSystem ${uri} has prefix ${id.value}`);
+                console.log(`NamingSystem ${uri} has prefix ${id.value}`);
               }
             });
           });
