@@ -25,48 +25,22 @@ const examples = {
     code: "8480-6",
     // "display": "Systolic blood pressure"
   }],
-  'https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/CA': [{
-    system: "urn:iso:std:iso:3166:-2", // This looks weird, but it is real: https://terminology.hl7.org/CodeSystem-v3-iso3166-2.html
-    code: "CA",
-  }, {
-    system: "http://terminology.hl7.org/CodeSystem/iso3166-2",
-    code: "CA",
+  'http://id.nlm.nih.gov/mesh/D014867': [{
+    system: "https://www.nlm.nih.gov/mesh",
+    code: "D014867",
   }],
-  'http://dicom.nema.org/resources/ontology/DCM/110127': [{
-    system: 'http://dicom.nema.org/resources/ontology/DCM',
-    code: '110127',
-  }],
-  'http://purl.bioontology.org/ontology/RXNORM/1160593': [{
-    system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
-    code: '1160593',
-  }],
-  'https://id.nlm.nih.gov/mesh/D000305': [{
-    system: 'https://www.nlm.nih.gov/mesh',
-    code: 'D000305',
-  }],
-  // Test support for IRI-encoding complex codes.
-  'http://snomed.info/id/128045006%3A%7B363698007%3D56459004%7D': [{
-    system: 'http://snomed.info/sct',
-    code: '128045006:{363698007=56459004}',
-  }],
-  // If Coding.system == 'urn:ietf:rfc:3986', then the Coding.code
-  // should be considered a concept URI.
-  'urn:oid:1.2.840.10008.5.1.4.1.1.2': [{
-    system: 'urn:ietf:rfc:3986',
-    code: 'urn:oid:1.2.840.10008.5.1.4.1.1.2',
-  }],
-  // Testing Unicode codes using SNOMED CT and the Unicode smiling
-  // face (U+263A, ☺). Note that this is not actually a valid SNOMED CT code.
-  'http://snomed.info/id/☺': [{
-    system: 'http://snomed.info/sct',
+  // Testing Unicode codes using LOINC and the Unicode smiling
+  // face (U+263A, ☺). Note that this is not actually a valid LOINC code.
+  'http://loinc.org/rdf/☺': [{
+    system: 'http://loinc.org',
     code: '☺',
   }],
   // Test Unicode codes with surrogate characters and combinations,
   // in this case the combination of a waving hand (U+1F44B) and
   // medium-dark skin tone (U+1F3FE). Note that this is not an actual
   // SNOMED CT code.
-  'http://snomed.info/id/👋🏾': [{
-    system: 'http://snomed.info/sct',
+  'http://loinc.org/rdf/👋🏾': [{
+    system: 'http://loinc.org',
     code: '👋🏾',
   }],
 };
