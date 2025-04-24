@@ -6,6 +6,17 @@
 
 ## debugging
 
+### Installing hl7.terminology
+
+The Concept IRI code needs the hl7.terminology NPM package, but this
+is not present in the standard npm registry. It needs to be installed
+by running:
+
+```shell
+$ npm install
+$ npm --registry https://packages.simplifier.net install hl7.terminology@6.2.0
+```
+
 ### FHIR content models
 
 Input data must conform to content models both for pre-processing and
