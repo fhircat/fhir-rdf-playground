@@ -20,10 +20,10 @@ const path = require("path");
 const fs = require("fs");
 
 const examples = {
-  'http://snomed.info/id/87512008': [{
-    system: "http://snomed.info/sct",
-    code: "87512008",
-    // "display": "Mild major depression"
+  'http://loinc.org/rdf/8480-6': [{
+    system: "http://loinc.org",
+    code: "8480-6",
+    // "display": "Systolic blood pressure"
   }],
   'https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/CA': [{
     system: "urn:iso:std:iso:3166:-2", // This looks weird, but it is real: https://terminology.hl7.org/CodeSystem-v3-iso3166-2.html
