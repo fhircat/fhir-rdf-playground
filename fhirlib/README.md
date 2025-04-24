@@ -17,6 +17,12 @@ $ npm install
 $ npm --registry https://packages.simplifier.net install hl7.terminology@6.2.0
 ```
 
+Once it is installed, you can run just the Concept IRI tests by running:
+
+```shell
+$ npm test -- test/ConceptIRI.test.js
+```
+
 ### FHIR content models
 
 Input data must conform to content models both for pre-processing and
