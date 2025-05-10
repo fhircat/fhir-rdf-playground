@@ -120,13 +120,18 @@ class ConceptIRI {
           let url = content.url;
 
           (content.identifier || []).forEach(id => {
-            if (id.system === 'https://terminology.hl7.org/temporary/CodeSystem/IRIstem') {
-              // console.log(`CodeSystem ${url} has prefix ${id.value})`);
-              if (!this.prefixIndex.hasOwnProperty(id.value)) this.prefixIndex[id.value] = {};
-              this.prefixIndex[id.value][url] = 1;
+            if ('type' in id && 'coding' in id.type) {
+              const codings = id.type.coding;
 
-              if (!this.uriIndex.hasOwnProperty(url)) this.uriIndex[url] = {};
-              this.uriIndex[url][id.value] = 1;
+              codings.forEach(coding => {
+                if ('code' in coding && coding.code === 'iri-stem') {
+                  if (!this.prefixIndex.hasOwnProperty(id.value)) this.prefixIndex[id.value] = {};
+                  this.prefixIndex[id.value][url] = 1;
+
+                  if (!this.uriIndex.hasOwnProperty(url)) this.uriIndex[url] = {};
+                  this.uriIndex[url][id.value] = 1;
+                }
+              });
             }
           });
         } else if(filename.startsWith('NamingSystem-')) {
@@ -139,7 +144,7 @@ class ConceptIRI {
           // Find uniqueId.
           (content.uniqueId || []).forEach(id => {
             uris.forEach(uri => {
-              if (id.comment === 'IRIstem') {
+              if (id.type === 'iri-stem') {
                 if (!this.prefixIndex.hasOwnProperty(id.value)) this.prefixIndex[id.value] = {};
                 this.prefixIndex[id.value][uri] = 1;
 

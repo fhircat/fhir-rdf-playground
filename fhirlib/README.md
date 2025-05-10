@@ -6,6 +6,39 @@
 
 ## debugging
 
+### Installing hl7.terminology
+
+The Concept IRI code needs the hl7.terminology NPM package, but this
+is not present in the standard npm registry. It needs to be installed
+by running:
+
+```shell
+$ npm install
+$ npm --registry https://packages.simplifier.net install hl7.terminology@6.2.0
+```
+
+Once it is installed, you can run just the Concept IRI tests by running:
+
+```shell
+$ cd fhirlib
+$ npm test -- test/ConceptIRI.test.js
+```
+
+There are slow Concept IRI tests, which rely on downloading the FHIR examples first:
+
+```shell
+$ cd test
+$ make
+$ cd ..
+$ RUN_SLOW_TESTS=1 npm test -- test/ConceptIRI.test.js 
+```
+
+This will create four sets of output files in `test/fhir/examples`:
+* `system-codes-r4.tsv` and `system-codes-r5.tsv`: Every system/code pair in the examples.
+* `unique-codes-r4.tsv` and `unique-codes-r5.tsv': Unique system/code pairs from the examples.
+* `resolved-r4.tsv` and `resolved-r5.tsv`: Tries to convert system/code pairs into IRIs using the concept IRI mappings,
+   then tries to resolve them (i.e. treating these IRIs as URLs), reporting the HTTP error code we get for them.
+
 ### FHIR content models
 
 Input data must conform to content models both for pre-processing and
